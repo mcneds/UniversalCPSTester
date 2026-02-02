@@ -7,8 +7,6 @@
   <style>
     :root{
       --bg:#0b0f17;
-      --panel:#101827;
-      --panel2:#0f172a;
       --text:#e6edf7;
       --muted:#a6b3c7;
       --line:#23314a;
@@ -34,17 +32,8 @@
       align-items:flex-end;
       justify-content:space-between;
     }
-    header h1{
-      margin:0;
-      font-size:20px;
-      letter-spacing:.2px;
-    }
-    header .sub{
-      margin:0;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.3;
-    }
+    header h1{margin:0;font-size:20px;letter-spacing:.2px}
+    header .sub{margin:0;color:var(--muted);font-size:12px;line-height:1.3}
     main{
       max-width:1100px;
       margin:0 auto;
@@ -53,9 +42,8 @@
       grid-template-columns: 360px 1fr;
       gap:14px;
     }
-    @media (max-width: 980px){
-      main{grid-template-columns:1fr}
-    }
+    @media (max-width: 980px){ main{grid-template-columns:1fr} }
+
     .card{
       background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
       border:1px solid var(--line);
@@ -75,6 +63,7 @@
       user-select:none;
     }
     .pill strong{color:var(--text); font-weight:650}
+
     .btn{
       border:1px solid var(--line);
       background:rgba(255,255,255,.03);
@@ -96,10 +85,8 @@
       border-color: rgba(251,113,133,.45);
       background: rgba(251,113,133,.10);
     }
-    .btn:disabled{
-      cursor:not-allowed;
-      opacity:.55;
-    }
+    .btn:disabled{cursor:not-allowed;opacity:.55}
+
     .seg{
       display:flex;
       border:1px solid var(--line);
@@ -118,17 +105,9 @@
       background:rgba(255,255,255,.05);
       color:var(--text);
     }
-    .grid2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    .grid3{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap:10px;
-    }
-    .label{font-size:12px; color:var(--muted); margin-bottom:6px}
+
+    .grid2{display:grid;grid-template-columns: 1fr 1fr;gap:10px}
+    .label{font-size:12px;color:var(--muted);margin-bottom:6px}
     select, input[type="number"]{
       width:100%;
       border:1px solid var(--line);
@@ -147,14 +126,13 @@
       user-select:none;
     }
     .check input{transform: translateY(1px)}
+
     .stats{
       display:grid;
       grid-template-columns: repeat(3, 1fr);
       gap:10px;
     }
-    @media (max-width: 980px){
-      .stats{grid-template-columns: repeat(2,1fr)}
-    }
+    @media (max-width: 980px){ .stats{grid-template-columns: repeat(2,1fr)} }
     .stat{
       border:1px solid var(--line);
       background:rgba(255,255,255,.02);
@@ -162,9 +140,10 @@
       padding:12px;
       min-height:74px;
     }
-    .stat .k{font-size:12px; color:var(--muted); margin-bottom:6px}
-    .stat .v{font-size:22px; font-weight:750; letter-spacing:.2px}
-    .stat .s{font-size:12px; color:var(--muted); margin-top:4px}
+    .stat .k{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .stat .v{font-size:22px;font-weight:750;letter-spacing:.2px}
+    .stat .s{font-size:12px;color:var(--muted);margin-top:4px}
+
     canvas{
       width:100%;
       height:180px;
@@ -172,20 +151,14 @@
       border:1px solid var(--line);
       background:rgba(0,0,0,.18);
     }
-    .hint{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.35;
-    }
-    .divider{
-      height:1px;
-      background:var(--line);
-      margin:12px 0;
-    }
+
+    .hint{font-size:12px;color:var(--muted);line-height:1.35}
+    .divider{height:1px;background:var(--line);margin:12px 0}
+
     .statusDot{
-      width:8px; height:8px; border-radius:50%;
+      width:8px;height:8px;border-radius:50%;
       background:var(--bad);
-      display:inline-block; margin-right:6px;
+      display:inline-block;margin-right:6px;
       box-shadow: 0 0 0 3px rgba(251,113,133,.12);
       vertical-align:middle;
     }
@@ -193,6 +166,7 @@
       background:var(--good);
       box-shadow: 0 0 0 3px rgba(74,222,128,.12);
     }
+
     .kbd{
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       font-size:12px;
@@ -203,6 +177,27 @@
       background:rgba(255,255,255,.03);
       color:var(--text);
     }
+
+    /* Test Pad */
+    .testPad{
+      margin-top:10px;
+      border:1px dashed rgba(96,165,250,.45);
+      background:rgba(96,165,250,.06);
+      border-radius:14px;
+      padding:16px;
+      min-height:96px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      color:var(--muted);
+      user-select:none;
+    }
+    .testPad strong{color:var(--text)}
+    .testPad:focus{
+      outline:2px solid rgba(96,165,250,.35);
+      outline-offset:2px;
+    }
   </style>
 </head>
 
@@ -212,7 +207,7 @@
       <h1>Input CPS Tester</h1>
       <p class="sub">Counts keyboard, mouse, and controller button presses. Timed tests (1–60s) + Unlimited mode with peak/current/rolling stats.</p>
     </div>
-    <div class="pill" id="focusPill"><span class="statusDot" id="focusDot"></span><strong id="focusText">Not focused</strong></div>
+    <div class="pill"><span class="statusDot" id="focusDot"></span><strong id="focusText">Not focused</strong></div>
   </header>
 
   <main>
@@ -306,10 +301,8 @@
       <div class="divider"></div>
 
       <div class="hint">
-        <div><span class="kbd">Tip</span> Click anywhere on the page to focus so keyboard counts.</div>
-        <div style="margin-top:6px">
-          Gamepads: press any button once after connecting. If nothing shows, try another browser (Chrome/Edge usually best).
-        </div>
+        <div><span class="kbd">Tip</span> Click the <strong>Test Pad</strong> on the right. UI controls (buttons/dropdowns/toggles) do NOT count.</div>
+        <div style="margin-top:6px">Right-click on the Test Pad won’t open a context menu.</div>
       </div>
 
       <div class="divider"></div>
@@ -318,7 +311,7 @@
       <div class="pill" id="gpList" style="width:100%; text-align:left">None</div>
     </section>
 
-    <!-- RIGHT: Stats + Graph -->
+    <!-- RIGHT: Stats + Graph + Test Pad -->
     <section class="card">
       <div class="stats">
         <div class="stat">
@@ -354,6 +347,16 @@
         </div>
       </div>
 
+      <!-- TEST PAD (right-click context menu disabled here) -->
+      <div id="testPad" class="testPad" tabindex="0" aria-label="Test pad">
+        <div>
+          <div style="font-size:13px; margin-bottom:6px;"><strong>Test Pad</strong> (click here)</div>
+          <div style="font-size:12px;">
+            Left / middle / right click count • right-click menu disabled • keyboard works when page is focused
+          </div>
+        </div>
+      </div>
+
       <div class="divider"></div>
 
       <div class="row spread">
@@ -367,7 +370,7 @@
       <div class="divider"></div>
 
       <div class="hint">
-        This counts <strong>press events</strong>:
+        Counts <strong>press events</strong>:
         keyboard = keydown, mouse = pointer button down, gamepad = button transitions (up→down).
         If you want “clicks only”, uncheck keyboard and gamepad.
       </div>
@@ -377,11 +380,15 @@
   <script>
     // ---------- Helpers ----------
     const $ = (id) => document.getElementById(id);
-    const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 
     function formatSeconds(sec){
       if (!isFinite(sec)) return "—";
       return sec.toFixed(sec < 10 ? 2 : 1) + "s";
+    }
+
+    function isUiControlTarget(target){
+      if (!target || !(target instanceof Element)) return false;
+      return !!target.closest("button, select, input, textarea, a, label, [role='button']");
     }
 
     // ---------- UI Elements ----------
@@ -418,6 +425,7 @@
     const rollCpsEl = $("rollCps");
     const rollSubEl = $("rollSub");
     const gpListEl = $("gpList");
+    const testPad = $("testPad");
 
     const focusDot = $("focusDot");
     const focusText = $("focusText");
@@ -426,30 +434,27 @@
     const ctx = canvas.getContext("2d");
 
     // ---------- State ----------
-    let mode = "timed"; // "timed" | "unlimited"
+    let mode = "timed";     // "timed" | "unlimited"
     let running = false;
 
-    let startWall = 0;      // performance.now()
-    let endWall = null;     // performance.now()
-    let durationSec = 10;   // timed duration
+    let startWall = 0;      // performance.now() at start
+    let stopWall = 0;       // performance.now() at stop/finish (freezes time)
+    let endWall = null;     // performance.now() at end for timed mode
+
+    let durationSec = 10;
     let rollingWindowSec = 10;
     let historySec = 60;
 
     let totalInputs = 0;
     let lastInputLabel = "—";
 
-    // For current/peak CPS in last 1s
-    let last1sQueue = []; // timestamps (performance.now)
-
-    // Per-second buckets for graph + rolling avg
-    // buckets[i] = count during second i since start
-    let buckets = [];
+    let last1sQueue = [];   // timestamps within last 1s
+    let buckets = [];       // per-second counts since start
     let lastBucketIndex = -1;
-
     let peakCps = 0;
 
     // Gamepad state
-    let gpPrev = new Map(); // key: gamepad.index -> Array<boolean> pressed states
+    let gpPrev = new Map(); // index -> pressed array
 
     // ---------- Mode switching ----------
     function setMode(next){
@@ -461,9 +466,8 @@
       unlimitedControls.style.display = isTimed ? "none" : "";
       modeHint.textContent = isTimed ? "Timed mode" : "Unlimited mode";
       syncConfigFromUI();
-      resetAll(); // switching modes resets to avoid confusion
+      resetAll();
     }
-
     modeTimedBtn.addEventListener("click", () => setMode("timed"));
     modeUnlimitedBtn.addEventListener("click", () => setMode("unlimited"));
 
@@ -471,14 +475,15 @@
     function syncConfigFromUI(){
       durationSec = parseInt(durationSelect.value, 10);
       rollingWindowSec = parseInt((mode === "timed" ? rollingSelectTimed.value : rollingSelectUnlimited.value), 10);
-      historySec = parseInt(historySelect.value, 10);
+      historySec = historySelect ? parseInt(historySelect.value, 10) : 60;
       rollSubEl.textContent = `Last ${rollingWindowSec}s`;
     }
-
     durationSelect.addEventListener("change", syncConfigFromUI);
     rollingSelectTimed.addEventListener("change", syncConfigFromUI);
     rollingSelectUnlimited.addEventListener("change", syncConfigFromUI);
-    historySelect.addEventListener("change", () => { syncConfigFromUI(); drawChart(); });
+    if (historySelect){
+      historySelect.addEventListener("change", () => { syncConfigFromUI(); drawChart(); });
+    }
 
     // ---------- Run control ----------
     function start(){
@@ -487,6 +492,7 @@
 
       running = true;
       startWall = performance.now();
+      stopWall = 0;
       endWall = (mode === "timed") ? (startWall + durationSec * 1000) : null;
 
       totalInputs = 0;
@@ -506,6 +512,7 @@
     function stop(){
       if (!running) return;
       running = false;
+      stopWall = performance.now();
 
       btnStart.disabled = false;
       btnStop.disabled = true;
@@ -513,9 +520,21 @@
       runStateEl.style.color = "var(--warn)";
     }
 
+    function finishTimed(){
+      if (!running) return;
+      running = false;
+      stopWall = endWall ?? performance.now();
+
+      btnStart.disabled = false;
+      btnStop.disabled = true;
+      runStateEl.textContent = "Finished";
+      runStateEl.style.color = "var(--warn)";
+    }
+
     function resetAll(){
       running = false;
       startWall = 0;
+      stopWall = 0;
       endWall = null;
 
       totalInputs = 0;
@@ -539,37 +558,9 @@
 
     // ---------- Input counting ----------
     function shouldCountPointer(e){
-      // pointerType: "mouse" | "touch" | "pen"
       if (e.pointerType === "mouse") return countMouse.checked;
       if (e.pointerType === "touch" || e.pointerType === "pen") return countTouch.checked;
       return false;
-    }
-
-    function registerInput(label){
-      if (!running) return;
-
-      const now = performance.now();
-
-      // Timed end check
-      if (mode === "timed" && endWall !== null && now >= endWall){
-        // ignore late inputs after time over
-        return;
-      }
-
-      totalInputs++;
-      lastInputLabel = label;
-
-      // last 1s queue
-      last1sQueue.push(now);
-
-      // per-second bucket
-      const secIndex = Math.floor((now - startWall) / 1000);
-      while (buckets.length <= secIndex) buckets.push(0);
-      buckets[secIndex]++;
-
-      // update peak in a cheap way: maintain queue length after pruning
-      pruneLast1s(now);
-      if (last1sQueue.length > peakCps) peakCps = last1sQueue.length;
     }
 
     function pruneLast1s(now){
@@ -577,13 +568,37 @@
       while (last1sQueue.length && last1sQueue[0] < cutoff) last1sQueue.shift();
     }
 
+    function registerInput(label){
+      if (!running) return;
+
+      const now = performance.now();
+
+      // Timed end check: finish and ignore late input
+      if (mode === "timed" && endWall !== null && now >= endWall){
+        finishTimed();
+        return;
+      }
+
+      totalInputs++;
+      lastInputLabel = label;
+
+      last1sQueue.push(now);
+
+      const secIndex = Math.floor((now - startWall) / 1000);
+      while (buckets.length <= secIndex) buckets.push(0);
+      buckets[secIndex]++;
+
+      pruneLast1s(now);
+      if (last1sQueue.length > peakCps) peakCps = last1sQueue.length;
+    }
+
     // Keyboard
     window.addEventListener("keydown", (e) => {
       if (!countKeyboard.checked) return;
+      if (isUiControlTarget(e.target)) return;
       if (ignoreKeyRepeat.checked && e.repeat) return;
 
       if (preventScrollKeys.checked){
-        // prevent scrolling for common keys while focused
         const scrollKeys = [" ", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "PageUp", "PageDown", "Home", "End"];
         if (scrollKeys.includes(e.key)) e.preventDefault();
       }
@@ -591,24 +606,39 @@
       registerInput(`Key: ${e.key}`);
     }, { passive: false });
 
-    // Pointer (mouse/touch/pen buttons)
+    // Pointer clicks (mouse/touch/pen)
     window.addEventListener("pointerdown", (e) => {
       if (!shouldCountPointer(e)) return;
-      // mouse buttons: 0 left, 1 middle, 2 right, 3/4 extra
+      if (isUiControlTarget(e.target)) return;
+
+      // If right-clicking inside Test Pad, prevent context menu "preemptively"
+      if (e.pointerType === "mouse" && e.button === 2 && testPad && testPad.contains(e.target)){
+        e.preventDefault();
+      }
+
       const btnName = (e.pointerType === "mouse")
         ? ["LMB","MMB","RMB","X1","X2"][e.button] ?? `Btn${e.button}`
         : (e.pointerType === "touch" ? "Touch" : "Pen");
+
       registerInput(`${e.pointerType}: ${btnName}`);
     });
 
     // Wheel
-    window.addEventListener("wheel", (e) => {
+    window.addEventListener("wheel", () => {
       if (!running) return;
       if (!countWheel.checked) return;
-      registerInput(`Wheel`);
+      if (isUiControlTarget(document.activeElement)) return;
+      registerInput("Wheel");
     }, { passive: true });
 
-    // Focus handling (keyboard only works reliably when page focused)
+    // Disable context menu ONLY on the Test Pad (the "spot" you asked for)
+    if (testPad){
+      testPad.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+      });
+    }
+
+    // Focus indicator
     function updateFocusUI(){
       const focused = document.hasFocus() && document.visibilityState === "visible";
       focusDot.classList.toggle("good", focused);
@@ -617,8 +647,7 @@
     window.addEventListener("focus", updateFocusUI);
     window.addEventListener("blur", updateFocusUI);
     document.addEventListener("visibilitychange", updateFocusUI);
-    window.addEventListener("pointerdown", () => { updateFocusUI(); });
-
+    window.addEventListener("pointerdown", updateFocusUI);
     updateFocusUI();
 
     // ---------- Gamepad polling ----------
@@ -633,8 +662,6 @@
         if (!countGamepad.checked) continue;
 
         const prev = gpPrev.get(gp.index) || new Array(gp.buttons.length).fill(false);
-
-        // Detect edges: !prevPressed -> pressed
         for (let i = 0; i < gp.buttons.length; i++){
           const pressed = !!gp.buttons[i]?.pressed;
           if (pressed && !prev[i]){
@@ -647,8 +674,7 @@
 
       gpListEl.textContent = connected.length ? connected.join(" | ") : "None";
     }
-
-    window.addEventListener("gamepadconnected", () => updateGamepads());
+    window.addEventListener("gamepadconnected", updateGamepads);
     window.addEventListener("gamepaddisconnected", (e) => {
       gpPrev.delete(e.gamepad.index);
       updateGamepads();
@@ -656,8 +682,9 @@
 
     // ---------- UI render loop ----------
     function getElapsed(now){
-      if (!running) return 0;
-      return Math.max(0, (now - startWall) / 1000);
+      if (!startWall) return 0;
+      const end = running ? now : (stopWall || now);
+      return Math.max(0, (end - startWall) / 1000);
     }
 
     function getRemaining(now){
@@ -671,18 +698,15 @@
     }
 
     function getRollingAvgCps(now){
-      if (!running) return 0;
+      if (!startWall) return 0;
       const elapsed = getElapsed(now);
       const curSec = Math.floor(elapsed);
-      if (curSec < 0) return 0;
-
-      // Sum buckets over the last rollingWindowSec whole seconds (including current second bucket)
       const startSec = Math.max(0, curSec - (rollingWindowSec - 1));
+
       let sum = 0;
       for (let s = startSec; s <= curSec; s++){
         sum += buckets[s] || 0;
       }
-
       const secsCounted = (curSec - startSec + 1);
       return secsCounted > 0 ? (sum / secsCounted) : 0;
     }
@@ -690,62 +714,44 @@
     function renderUI(now){
       syncConfigFromUI();
 
-      // Time
       if (running){
-        const elapsed = getElapsed(now);
         const remaining = getRemaining(now);
 
-        timeMain.textContent = formatSeconds(elapsed);
+        timeMain.textContent = formatSeconds(getElapsed(now));
+        timeSub.textContent = (mode === "timed")
+          ? `Remaining: ${formatSeconds(remaining)}`
+          : "Unlimited";
 
-        if (mode === "timed"){
-          timeSub.textContent = `Remaining: ${formatSeconds(remaining)}`;
-        } else {
-          timeSub.textContent = "Unlimited";
-        }
-
-        // Auto-stop for timed
         if (mode === "timed" && remaining <= 0){
-          // Ensure final UI reflects stop
-          stop();
+          finishTimed();
         }
       } else {
-        timeMain.textContent = (startWall ? formatSeconds((performance.now() - startWall)/1000) : "0.00s");
-        timeSub.textContent = (mode === "timed") ? `Interval: ${durationSec}s` : "Unlimited";
+        timeMain.textContent = formatSeconds(getElapsed(now));
+        timeSub.textContent = (mode === "timed")
+          ? `Interval: ${durationSec}s`
+          : "Unlimited";
       }
 
-      // Totals
       totalInputsEl.textContent = String(totalInputs);
       lastInputEl.textContent = `Last: ${lastInputLabel}`;
 
-      // CPS stats
-      const elapsedForAvg = running ? Math.max(0.001, getElapsed(now)) : Math.max(0.001, (startWall ? (performance.now() - startWall)/1000 : 0.001));
-      const avg = totalInputs / elapsedForAvg;
+      const elapsedForAvg = Math.max(0.001, getElapsed(now));
+      avgCpsEl.textContent = (totalInputs / elapsedForAvg).toFixed(2);
 
-      const cur = running ? getCurrentCps(now) : 0;
-      const roll = running ? getRollingAvgCps(now) : 0;
-
-      avgCpsEl.textContent = avg.toFixed(2);
-      curCpsEl.textContent = String(cur);
+      curCpsEl.textContent = String(running ? getCurrentCps(now) : 0);
       peakCpsEl.textContent = String(peakCps);
-      rollCpsEl.textContent = roll.toFixed(2);
+      rollCpsEl.textContent = (running ? getRollingAvgCps(now) : 0).toFixed(2);
 
-      // Update run pill
-      if (!running && runStateEl.textContent === "Stopped"){
-        // keep stopped
-      }
-
-      // Graph: redraw at a reasonable cadence
       drawChart();
     }
 
     // ---------- Chart ----------
     function drawChart(){
-      // Determine how much history to show
       const showSecs = (mode === "timed") ? durationSec : historySec;
 
-      // Build series for last showSecs seconds (ending at current second)
+      // Build series ending at current second
       let series = [];
-      if (running){
+      if (startWall){
         const elapsed = getElapsed(performance.now());
         const curSec = Math.floor(elapsed);
         const startSec = Math.max(0, curSec - (showSecs - 1));
@@ -753,20 +759,15 @@
           series.push(buckets[s] || 0);
         }
       } else {
-        // show what we have (up to showSecs)
-        series = buckets.slice(-showSecs);
-        if (series.length === 0) series = new Array(Math.min(showSecs, 10)).fill(0);
+        series = new Array(Math.min(showSecs, 10)).fill(0);
       }
 
-      // Clear
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Background grid
       const w = canvas.width, h = canvas.height;
-      ctx.globalAlpha = 1;
+      ctx.clearRect(0, 0, w, h);
+
+      // grid
       ctx.strokeStyle = "rgba(255,255,255,0.10)";
       ctx.lineWidth = 1;
-
       const gridY = 4;
       for (let i = 1; i <= gridY; i++){
         const y = (h / (gridY + 1)) * i;
@@ -785,26 +786,21 @@
       const gap = 2;
       const barW = n > 0 ? Math.max(1, Math.floor((innerW - (n-1)*gap) / n)) : innerW;
 
-      // Bars
       for (let i = 0; i < n; i++){
         const v = series[i];
         const bh = Math.round((v / maxVal) * innerH);
         const x = padX + i*(barW + gap);
         const y = padY + (innerH - bh);
 
-        // color depends on relative height, no hard-coded style; keep simple
         ctx.fillStyle = "rgba(96,165,250,0.55)";
         ctx.fillRect(x, y, barW, bh);
       }
 
-      // Labels
       ctx.fillStyle = "rgba(230,237,247,0.85)";
       ctx.font = "12px ui-sans-serif, system-ui";
       ctx.fillText(`Max: ${maxVal} cps`, 14, 18);
 
-      const rightLabel = (mode === "timed")
-        ? `${durationSec}s window`
-        : `${historySec}s window`;
+      const rightLabel = (mode === "timed") ? `${durationSec}s window` : `${historySec}s window`;
       const labelW = ctx.measureText(rightLabel).width;
       ctx.fillText(rightLabel, w - labelW - 14, 18);
     }
@@ -813,10 +809,8 @@
     function loop(){
       const now = performance.now();
 
-      // Gamepad polling
       updateGamepads();
 
-      // Bucket advancement (so rolling avg shows 0s when idle in a second)
       if (running){
         const secIndex = Math.floor((now - startWall) / 1000);
         if (secIndex !== lastBucketIndex){
@@ -830,7 +824,7 @@
     }
     requestAnimationFrame(loop);
 
-    // Initialize
+    // init
     resetAll();
   </script>
 </body>
