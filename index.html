@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Input CPS Tester</title>
+  <style>
+    :root{
+      --bg:#0b0f17;
+      --panel:#101827;
+      --panel2:#0f172a;
+      --text:#e6edf7;
+      --muted:#a6b3c7;
+      --line:#23314a;
+      --good:#4ade80;
+      --warn:#fbbf24;
+      --bad:#fb7185;
+      --accent:#60a5fa;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(1200px 800px at 70% 0%, #111c33 0%, var(--bg) 60%);
+      color:var(--text);
+      min-height:100vh;
+    }
+    header{
+      padding:20px 18px 8px;
+      max-width:1100px;
+      margin:0 auto;
+      display:flex;
+      gap:14px;
+      align-items:flex-end;
+      justify-content:space-between;
+    }
+    header h1{
+      margin:0;
+      font-size:20px;
+      letter-spacing:.2px;
+    }
+    header .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.3;
+    }
+    main{
+      max-width:1100px;
+      margin:0 auto;
+      padding:12px 18px 30px;
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      main{grid-template-columns:1fr}
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .row.spread{justify-content:space-between}
+    .pill{
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.02);
+      font-size:12px;
+      color:var(--muted);
+      user-select:none;
+    }
+    .pill strong{color:var(--text); font-weight:650}
+    .btn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:650;
+      cursor:pointer;
+      transition:transform .04s ease, background .1s ease;
+      user-select:none;
+    }
+    .btn:hover{background:rgba(255,255,255,.06)}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{
+      border-color: rgba(96,165,250,.5);
+      background: rgba(96,165,250,.12);
+    }
+    .btn.danger{
+      border-color: rgba(251,113,133,.45);
+      background: rgba(251,113,133,.10);
+    }
+    .btn:disabled{
+      cursor:not-allowed;
+      opacity:.55;
+    }
+    .seg{
+      display:flex;
+      border:1px solid var(--line);
+      border-radius:12px;
+      overflow:hidden;
+    }
+    .seg button{
+      border:0;
+      background:transparent;
+      color:var(--muted);
+      padding:10px 12px;
+      cursor:pointer;
+      font-weight:650;
+    }
+    .seg button.active{
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+    }
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .grid3{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+    }
+    .label{font-size:12px; color:var(--muted); margin-bottom:6px}
+    select, input[type="number"]{
+      width:100%;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.02);
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      outline:none;
+    }
+    .check{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+      color:var(--text);
+      user-select:none;
+    }
+    .check input{transform: translateY(1px)}
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    @media (max-width: 980px){
+      .stats{grid-template-columns: repeat(2,1fr)}
+    }
+    .stat{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.02);
+      border-radius:14px;
+      padding:12px;
+      min-height:74px;
+    }
+    .stat .k{font-size:12px; color:var(--muted); margin-bottom:6px}
+    .stat .v{font-size:22px; font-weight:750; letter-spacing:.2px}
+    .stat .s{font-size:12px; color:var(--muted); margin-top:4px}
+    canvas{
+      width:100%;
+      height:180px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+    }
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+    .divider{
+      height:1px;
+      background:var(--line);
+      margin:12px 0;
+    }
+    .statusDot{
+      width:8px; height:8px; border-radius:50%;
+      background:var(--bad);
+      display:inline-block; margin-right:6px;
+      box-shadow: 0 0 0 3px rgba(251,113,133,.12);
+      vertical-align:middle;
+    }
+    .statusDot.good{
+      background:var(--good);
+      box-shadow: 0 0 0 3px rgba(74,222,128,.12);
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:12px;
+      padding:2px 6px;
+      border:1px solid var(--line);
+      border-bottom-color:#2f4365;
+      border-radius:8px;
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1>Input CPS Tester</h1>
+      <p class="sub">Counts keyboard, mouse, and controller button presses. Timed tests (1–60s) + Unlimited mode with peak/current/rolling stats.</p>
+    </div>
+    <div class="pill" id="focusPill"><span class="statusDot" id="focusDot"></span><strong id="focusText">Not focused</strong></div>
+  </header>
+
+  <main>
+    <!-- LEFT: Controls -->
+    <section class="card">
+      <div class="row spread">
+        <div class="seg" role="tablist" aria-label="Mode">
+          <button id="modeTimed" class="active" type="button">Timed</button>
+          <button id="modeUnlimited" type="button">Unlimited</button>
+        </div>
+        <div class="pill"><strong id="runState">Idle</strong></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div id="timedControls">
+        <div class="label">Interval</div>
+        <div class="grid2">
+          <select id="durationSelect">
+            <option value="1">1s</option>
+            <option value="2">2s</option>
+            <option value="3">3s</option>
+            <option value="5">5s</option>
+            <option value="10" selected>10s</option>
+            <option value="15">15s</option>
+            <option value="20">20s</option>
+            <option value="30">30s</option>
+            <option value="60">60s</option>
+          </select>
+          <div>
+            <div class="label">Rolling avg window</div>
+            <select id="rollingSelectTimed">
+              <option value="5">5s</option>
+              <option value="10" selected>10s</option>
+              <option value="20">20s</option>
+              <option value="60">60s</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="unlimitedControls" style="display:none">
+        <div class="grid2">
+          <div>
+            <div class="label">Rolling avg window</div>
+            <select id="rollingSelectUnlimited">
+              <option value="5">5s</option>
+              <option value="10" selected>10s</option>
+              <option value="20">20s</option>
+              <option value="60">60s</option>
+            </select>
+          </div>
+          <div>
+            <div class="label">History length</div>
+            <select id="historySelect">
+              <option value="30">30s</option>
+              <option value="60" selected>60s</option>
+              <option value="120">120s</option>
+              <option value="300">300s</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row">
+        <button class="btn primary" id="btnStart" type="button">Start</button>
+        <button class="btn danger" id="btnStop" type="button" disabled>Stop</button>
+        <button class="btn" id="btnReset" type="button">Reset</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="label">Count inputs from</div>
+      <div class="grid2">
+        <label class="check"><input type="checkbox" id="countKeyboard" checked> Keyboard (keydown)</label>
+        <label class="check"><input type="checkbox" id="countMouse" checked> Mouse buttons</label>
+        <label class="check"><input type="checkbox" id="countWheel"> Mouse wheel</label>
+        <label class="check"><input type="checkbox" id="countTouch"> Touch / pen</label>
+        <label class="check"><input type="checkbox" id="countGamepad" checked> Gamepad buttons</label>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="grid2">
+        <label class="check"><input type="checkbox" id="ignoreKeyRepeat" checked> Ignore key repeat</label>
+        <label class="check"><input type="checkbox" id="preventScrollKeys" checked> Prevent scroll keys</label>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="hint">
+        <div><span class="kbd">Tip</span> Click anywhere on the page to focus so keyboard counts.</div>
+        <div style="margin-top:6px">
+          Gamepads: press any button once after connecting. If nothing shows, try another browser (Chrome/Edge usually best).
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="label">Detected gamepads</div>
+      <div class="pill" id="gpList" style="width:100%; text-align:left">None</div>
+    </section>
+
+    <!-- RIGHT: Stats + Graph -->
+    <section class="card">
+      <div class="stats">
+        <div class="stat">
+          <div class="k">Time</div>
+          <div class="v" id="timeMain">0.00s</div>
+          <div class="s" id="timeSub">—</div>
+        </div>
+        <div class="stat">
+          <div class="k">Total Inputs</div>
+          <div class="v" id="totalInputs">0</div>
+          <div class="s" id="lastInput">Last: —</div>
+        </div>
+        <div class="stat">
+          <div class="k">Average CPS</div>
+          <div class="v" id="avgCps">0.00</div>
+          <div class="s">Total / elapsed</div>
+        </div>
+
+        <div class="stat">
+          <div class="k">Current CPS</div>
+          <div class="v" id="curCps">0</div>
+          <div class="s">Inputs in last 1s</div>
+        </div>
+        <div class="stat">
+          <div class="k">Peak CPS</div>
+          <div class="v" id="peakCps">0</div>
+          <div class="s">Best 1s window</div>
+        </div>
+        <div class="stat">
+          <div class="k">Rolling Avg CPS</div>
+          <div class="v" id="rollCps">0.00</div>
+          <div class="s" id="rollSub">Last 10s</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row spread">
+        <div class="pill"><strong>History graph</strong> (per-second CPS)</div>
+        <div class="pill" id="modeHint">Timed mode</div>
+      </div>
+      <div style="margin-top:10px">
+        <canvas id="chart" width="900" height="260"></canvas>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="hint">
+        This counts <strong>press events</strong>:
+        keyboard = keydown, mouse = pointer button down, gamepad = button transitions (up→down).
+        If you want “clicks only”, uncheck keyboard and gamepad.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ---------- Helpers ----------
+    const $ = (id) => document.getElementById(id);
+    const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+
+    function formatSeconds(sec){
+      if (!isFinite(sec)) return "—";
+      return sec.toFixed(sec < 10 ? 2 : 1) + "s";
+    }
+
+    // ---------- UI Elements ----------
+    const modeTimedBtn = $("modeTimed");
+    const modeUnlimitedBtn = $("modeUnlimited");
+    const timedControls = $("timedControls");
+    const unlimitedControls = $("unlimitedControls");
+    const durationSelect = $("durationSelect");
+    const rollingSelectTimed = $("rollingSelectTimed");
+    const rollingSelectUnlimited = $("rollingSelectUnlimited");
+    const historySelect = $("historySelect");
+
+    const btnStart = $("btnStart");
+    const btnStop = $("btnStop");
+    const btnReset = $("btnReset");
+
+    const countKeyboard = $("countKeyboard");
+    const countMouse = $("countMouse");
+    const countWheel = $("countWheel");
+    const countTouch = $("countTouch");
+    const countGamepad = $("countGamepad");
+    const ignoreKeyRepeat = $("ignoreKeyRepeat");
+    const preventScrollKeys = $("preventScrollKeys");
+
+    const runStateEl = $("runState");
+    const modeHint = $("modeHint");
+    const timeMain = $("timeMain");
+    const timeSub = $("timeSub");
+    const totalInputsEl = $("totalInputs");
+    const lastInputEl = $("lastInput");
+    const avgCpsEl = $("avgCps");
+    const curCpsEl = $("curCps");
+    const peakCpsEl = $("peakCps");
+    const rollCpsEl = $("rollCps");
+    const rollSubEl = $("rollSub");
+    const gpListEl = $("gpList");
+
+    const focusDot = $("focusDot");
+    const focusText = $("focusText");
+
+    const canvas = $("chart");
+    const ctx = canvas.getContext("2d");
+
+    // ---------- State ----------
+    let mode = "timed"; // "timed" | "unlimited"
+    let running = false;
+
+    let startWall = 0;      // performance.now()
+    let endWall = null;     // performance.now()
+    let durationSec = 10;   // timed duration
+    let rollingWindowSec = 10;
+    let historySec = 60;
+
+    let totalInputs = 0;
+    let lastInputLabel = "—";
+
+    // For current/peak CPS in last 1s
+    let last1sQueue = []; // timestamps (performance.now)
+
+    // Per-second buckets for graph + rolling avg
+    // buckets[i] = count during second i since start
+    let buckets = [];
+    let lastBucketIndex = -1;
+
+    let peakCps = 0;
+
+    // Gamepad state
+    let gpPrev = new Map(); // key: gamepad.index -> Array<boolean> pressed states
+
+    // ---------- Mode switching ----------
+    function setMode(next){
+      mode = next;
+      const isTimed = mode === "timed";
+      modeTimedBtn.classList.toggle("active", isTimed);
+      modeUnlimitedBtn.classList.toggle("active", !isTimed);
+      timedControls.style.display = isTimed ? "" : "none";
+      unlimitedControls.style.display = isTimed ? "none" : "";
+      modeHint.textContent = isTimed ? "Timed mode" : "Unlimited mode";
+      syncConfigFromUI();
+      resetAll(); // switching modes resets to avoid confusion
+    }
+
+    modeTimedBtn.addEventListener("click", () => setMode("timed"));
+    modeUnlimitedBtn.addEventListener("click", () => setMode("unlimited"));
+
+    // ---------- Config ----------
+    function syncConfigFromUI(){
+      durationSec = parseInt(durationSelect.value, 10);
+      rollingWindowSec = parseInt((mode === "timed" ? rollingSelectTimed.value : rollingSelectUnlimited.value), 10);
+      historySec = parseInt(historySelect.value, 10);
+      rollSubEl.textContent = `Last ${rollingWindowSec}s`;
+    }
+
+    durationSelect.addEventListener("change", syncConfigFromUI);
+    rollingSelectTimed.addEventListener("change", syncConfigFromUI);
+    rollingSelectUnlimited.addEventListener("change", syncConfigFromUI);
+    historySelect.addEventListener("change", () => { syncConfigFromUI(); drawChart(); });
+
+    // ---------- Run control ----------
+    function start(){
+      if (running) return;
+      syncConfigFromUI();
+
+      running = true;
+      startWall = performance.now();
+      endWall = (mode === "timed") ? (startWall + durationSec * 1000) : null;
+
+      totalInputs = 0;
+      lastInputLabel = "—";
+      last1sQueue = [];
+      buckets = [];
+      lastBucketIndex = -1;
+      peakCps = 0;
+
+      btnStart.disabled = true;
+      btnStop.disabled = false;
+      runStateEl.textContent = "Running";
+      runStateEl.style.color = "var(--good)";
+      drawChart();
+    }
+
+    function stop(){
+      if (!running) return;
+      running = false;
+
+      btnStart.disabled = false;
+      btnStop.disabled = true;
+      runStateEl.textContent = "Stopped";
+      runStateEl.style.color = "var(--warn)";
+    }
+
+    function resetAll(){
+      running = false;
+      startWall = 0;
+      endWall = null;
+
+      totalInputs = 0;
+      lastInputLabel = "—";
+      last1sQueue = [];
+      buckets = [];
+      lastBucketIndex = -1;
+      peakCps = 0;
+
+      btnStart.disabled = false;
+      btnStop.disabled = true;
+      runStateEl.textContent = "Idle";
+      runStateEl.style.color = "var(--muted)";
+      renderUI(performance.now());
+      drawChart();
+    }
+
+    btnStart.addEventListener("click", start);
+    btnStop.addEventListener("click", stop);
+    btnReset.addEventListener("click", resetAll);
+
+    // ---------- Input counting ----------
+    function shouldCountPointer(e){
+      // pointerType: "mouse" | "touch" | "pen"
+      if (e.pointerType === "mouse") return countMouse.checked;
+      if (e.pointerType === "touch" || e.pointerType === "pen") return countTouch.checked;
+      return false;
+    }
+
+    function registerInput(label){
+      if (!running) return;
+
+      const now = performance.now();
+
+      // Timed end check
+      if (mode === "timed" && endWall !== null && now >= endWall){
+        // ignore late inputs after time over
+        return;
+      }
+
+      totalInputs++;
+      lastInputLabel = label;
+
+      // last 1s queue
+      last1sQueue.push(now);
+
+      // per-second bucket
+      const secIndex = Math.floor((now - startWall) / 1000);
+      while (buckets.length <= secIndex) buckets.push(0);
+      buckets[secIndex]++;
+
+      // update peak in a cheap way: maintain queue length after pruning
+      pruneLast1s(now);
+      if (last1sQueue.length > peakCps) peakCps = last1sQueue.length;
+    }
+
+    function pruneLast1s(now){
+      const cutoff = now - 1000;
+      while (last1sQueue.length && last1sQueue[0] < cutoff) last1sQueue.shift();
+    }
+
+    // Keyboard
+    window.addEventListener("keydown", (e) => {
+      if (!countKeyboard.checked) return;
+      if (ignoreKeyRepeat.checked && e.repeat) return;
+
+      if (preventScrollKeys.checked){
+        // prevent scrolling for common keys while focused
+        const scrollKeys = [" ", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "PageUp", "PageDown", "Home", "End"];
+        if (scrollKeys.includes(e.key)) e.preventDefault();
+      }
+
+      registerInput(`Key: ${e.key}`);
+    }, { passive: false });
+
+    // Pointer (mouse/touch/pen buttons)
+    window.addEventListener("pointerdown", (e) => {
+      if (!shouldCountPointer(e)) return;
+      // mouse buttons: 0 left, 1 middle, 2 right, 3/4 extra
+      const btnName = (e.pointerType === "mouse")
+        ? ["LMB","MMB","RMB","X1","X2"][e.button] ?? `Btn${e.button}`
+        : (e.pointerType === "touch" ? "Touch" : "Pen");
+      registerInput(`${e.pointerType}: ${btnName}`);
+    });
+
+    // Wheel
+    window.addEventListener("wheel", (e) => {
+      if (!running) return;
+      if (!countWheel.checked) return;
+      registerInput(`Wheel`);
+    }, { passive: true });
+
+    // Focus handling (keyboard only works reliably when page focused)
+    function updateFocusUI(){
+      const focused = document.hasFocus() && document.visibilityState === "visible";
+      focusDot.classList.toggle("good", focused);
+      focusText.textContent = focused ? "Focused" : "Not focused";
+    }
+    window.addEventListener("focus", updateFocusUI);
+    window.addEventListener("blur", updateFocusUI);
+    document.addEventListener("visibilitychange", updateFocusUI);
+    window.addEventListener("pointerdown", () => { updateFocusUI(); });
+
+    updateFocusUI();
+
+    // ---------- Gamepad polling ----------
+    function updateGamepads(){
+      const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+      const connected = [];
+
+      for (const gp of gps){
+        if (!gp) continue;
+        connected.push(`${gp.index}: ${gp.id}`);
+
+        if (!countGamepad.checked) continue;
+
+        const prev = gpPrev.get(gp.index) || new Array(gp.buttons.length).fill(false);
+
+        // Detect edges: !prevPressed -> pressed
+        for (let i = 0; i < gp.buttons.length; i++){
+          const pressed = !!gp.buttons[i]?.pressed;
+          if (pressed && !prev[i]){
+            registerInput(`Gamepad${gp.index}: B${i}`);
+          }
+          prev[i] = pressed;
+        }
+        gpPrev.set(gp.index, prev);
+      }
+
+      gpListEl.textContent = connected.length ? connected.join(" | ") : "None";
+    }
+
+    window.addEventListener("gamepadconnected", () => updateGamepads());
+    window.addEventListener("gamepaddisconnected", (e) => {
+      gpPrev.delete(e.gamepad.index);
+      updateGamepads();
+    });
+
+    // ---------- UI render loop ----------
+    function getElapsed(now){
+      if (!running) return 0;
+      return Math.max(0, (now - startWall) / 1000);
+    }
+
+    function getRemaining(now){
+      if (mode !== "timed" || endWall === null) return Infinity;
+      return Math.max(0, (endWall - now) / 1000);
+    }
+
+    function getCurrentCps(now){
+      pruneLast1s(now);
+      return last1sQueue.length;
+    }
+
+    function getRollingAvgCps(now){
+      if (!running) return 0;
+      const elapsed = getElapsed(now);
+      const curSec = Math.floor(elapsed);
+      if (curSec < 0) return 0;
+
+      // Sum buckets over the last rollingWindowSec whole seconds (including current second bucket)
+      const startSec = Math.max(0, curSec - (rollingWindowSec - 1));
+      let sum = 0;
+      for (let s = startSec; s <= curSec; s++){
+        sum += buckets[s] || 0;
+      }
+
+      const secsCounted = (curSec - startSec + 1);
+      return secsCounted > 0 ? (sum / secsCounted) : 0;
+    }
+
+    function renderUI(now){
+      syncConfigFromUI();
+
+      // Time
+      if (running){
+        const elapsed = getElapsed(now);
+        const remaining = getRemaining(now);
+
+        timeMain.textContent = formatSeconds(elapsed);
+
+        if (mode === "timed"){
+          timeSub.textContent = `Remaining: ${formatSeconds(remaining)}`;
+        } else {
+          timeSub.textContent = "Unlimited";
+        }
+
+        // Auto-stop for timed
+        if (mode === "timed" && remaining <= 0){
+          // Ensure final UI reflects stop
+          stop();
+        }
+      } else {
+        timeMain.textContent = (startWall ? formatSeconds((performance.now() - startWall)/1000) : "0.00s");
+        timeSub.textContent = (mode === "timed") ? `Interval: ${durationSec}s` : "Unlimited";
+      }
+
+      // Totals
+      totalInputsEl.textContent = String(totalInputs);
+      lastInputEl.textContent = `Last: ${lastInputLabel}`;
+
+      // CPS stats
+      const elapsedForAvg = running ? Math.max(0.001, getElapsed(now)) : Math.max(0.001, (startWall ? (performance.now() - startWall)/1000 : 0.001));
+      const avg = totalInputs / elapsedForAvg;
+
+      const cur = running ? getCurrentCps(now) : 0;
+      const roll = running ? getRollingAvgCps(now) : 0;
+
+      avgCpsEl.textContent = avg.toFixed(2);
+      curCpsEl.textContent = String(cur);
+      peakCpsEl.textContent = String(peakCps);
+      rollCpsEl.textContent = roll.toFixed(2);
+
+      // Update run pill
+      if (!running && runStateEl.textContent === "Stopped"){
+        // keep stopped
+      }
+
+      // Graph: redraw at a reasonable cadence
+      drawChart();
+    }
+
+    // ---------- Chart ----------
+    function drawChart(){
+      // Determine how much history to show
+      const showSecs = (mode === "timed") ? durationSec : historySec;
+
+      // Build series for last showSecs seconds (ending at current second)
+      let series = [];
+      if (running){
+        const elapsed = getElapsed(performance.now());
+        const curSec = Math.floor(elapsed);
+        const startSec = Math.max(0, curSec - (showSecs - 1));
+        for (let s = startSec; s <= curSec; s++){
+          series.push(buckets[s] || 0);
+        }
+      } else {
+        // show what we have (up to showSecs)
+        series = buckets.slice(-showSecs);
+        if (series.length === 0) series = new Array(Math.min(showSecs, 10)).fill(0);
+      }
+
+      // Clear
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Background grid
+      const w = canvas.width, h = canvas.height;
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = "rgba(255,255,255,0.10)";
+      ctx.lineWidth = 1;
+
+      const gridY = 4;
+      for (let i = 1; i <= gridY; i++){
+        const y = (h / (gridY + 1)) * i;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      const maxVal = Math.max(5, ...series);
+      const padX = 16, padY = 16;
+      const innerW = w - padX*2;
+      const innerH = h - padY*2;
+
+      const n = series.length;
+      const gap = 2;
+      const barW = n > 0 ? Math.max(1, Math.floor((innerW - (n-1)*gap) / n)) : innerW;
+
+      // Bars
+      for (let i = 0; i < n; i++){
+        const v = series[i];
+        const bh = Math.round((v / maxVal) * innerH);
+        const x = padX + i*(barW + gap);
+        const y = padY + (innerH - bh);
+
+        // color depends on relative height, no hard-coded style; keep simple
+        ctx.fillStyle = "rgba(96,165,250,0.55)";
+        ctx.fillRect(x, y, barW, bh);
+      }
+
+      // Labels
+      ctx.fillStyle = "rgba(230,237,247,0.85)";
+      ctx.font = "12px ui-sans-serif, system-ui";
+      ctx.fillText(`Max: ${maxVal} cps`, 14, 18);
+
+      const rightLabel = (mode === "timed")
+        ? `${durationSec}s window`
+        : `${historySec}s window`;
+      const labelW = ctx.measureText(rightLabel).width;
+      ctx.fillText(rightLabel, w - labelW - 14, 18);
+    }
+
+    // ---------- Animation loop ----------
+    function loop(){
+      const now = performance.now();
+
+      // Gamepad polling
+      updateGamepads();
+
+      // Bucket advancement (so rolling avg shows 0s when idle in a second)
+      if (running){
+        const secIndex = Math.floor((now - startWall) / 1000);
+        if (secIndex !== lastBucketIndex){
+          while (buckets.length <= secIndex) buckets.push(0);
+          lastBucketIndex = secIndex;
+        }
+      }
+
+      renderUI(now);
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+
+    // Initialize
+    resetAll();
+  </script>
+</body>
+</html>
