@@ -185,18 +185,54 @@
       background:rgba(96,165,250,.06);
       border-radius:14px;
       padding:16px;
-      min-height:96px;
+      min-height:110px;
       display:flex;
       align-items:center;
       justify-content:center;
       text-align:center;
       color:var(--muted);
       user-select:none;
+      position:relative;
+      overflow:hidden;
     }
     .testPad strong{color:var(--text)}
     .testPad:focus{
       outline:2px solid rgba(96,165,250,.35);
       outline-offset:2px;
+    }
+    .padSub{
+      font-size:12px;
+      margin-top:6px;
+      color:var(--muted);
+    }
+    .padBadge{
+      display:inline-block;
+      margin-left:8px;
+      padding:3px 8px;
+      border-radius:999px;
+      border:1px solid rgba(96,165,250,.35);
+      background:rgba(96,165,250,.10);
+      font-size:12px;
+      color:var(--text);
+      vertical-align:middle;
+    }
+    .cooldownBarWrap{
+      position:absolute;
+      left:10px;
+      right:10px;
+      bottom:10px;
+      height:6px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
+      overflow:hidden;
+      display:none;
+    }
+    .cooldownBar{
+      height:100%;
+      width:0%;
+      background:rgba(96,165,250,.65);
+      border-radius:999px;
     }
   </style>
 </head>
@@ -205,7 +241,7 @@
   <header>
     <div>
       <h1>Input CPS Tester</h1>
-      <p class="sub">Counts keyboard, mouse, and controller button presses. Timed tests (1–60s) + Unlimited mode with peak/current/rolling stats.</p>
+      <p class="sub">Click the Test Pad to start. Timed tests (1–60s) + Unlimited mode with peak/current/rolling stats.</p>
     </div>
     <div class="pill"><span class="statusDot" id="focusDot"></span><strong id="focusText">Not focused</strong></div>
   </header>
@@ -301,8 +337,8 @@
       <div class="divider"></div>
 
       <div class="hint">
-        <div><span class="kbd">Tip</span> Click the <strong>Test Pad</strong> on the right. UI controls (buttons/dropdowns/toggles) do NOT count.</div>
-        <div style="margin-top:6px">Right-click on the Test Pad won’t open a context menu.</div>
+        <div><span class="kbd">Tip</span> Click the <strong>Test Pad</strong> to start. Right-click menu is disabled on the pad.</div>
+        <div style="margin-top:6px">Timed mode has a short cooldown after finishing so it won’t instantly restart while you’re still clicking.</div>
       </div>
 
       <div class="divider"></div>
@@ -347,13 +383,19 @@
         </div>
       </div>
 
-      <!-- TEST PAD (right-click context menu disabled here) -->
+      <!-- TEST PAD -->
       <div id="testPad" class="testPad" tabindex="0" aria-label="Test pad">
         <div>
-          <div style="font-size:13px; margin-bottom:6px;"><strong>Test Pad</strong> (click here)</div>
-          <div style="font-size:12px;">
+          <div style="font-size:13px; margin-bottom:6px;">
+            <strong id="padTitle">Test Pad</strong>
+            <span class="padBadge" id="padBadge">Click to start</span>
+          </div>
+          <div class="padSub" id="padSub">
             Left / middle / right click count • right-click menu disabled • keyboard works when page is focused
           </div>
+        </div>
+        <div class="cooldownBarWrap" id="cooldownBarWrap">
+          <div class="cooldownBar" id="cooldownBar"></div>
         </div>
       </div>
 
@@ -426,6 +468,10 @@
     const rollSubEl = $("rollSub");
     const gpListEl = $("gpList");
     const testPad = $("testPad");
+    const padBadge = $("padBadge");
+    const padSub = $("padSub");
+    const cooldownBarWrap = $("cooldownBarWrap");
+    const cooldownBar = $("cooldownBar");
 
     const focusDot = $("focusDot");
     const focusText = $("focusText");
@@ -452,6 +498,11 @@
     let buckets = [];       // per-second counts since start
     let lastBucketIndex = -1;
     let peakCps = 0;
+
+    // Timed-mode cooldown to prevent instant restart on spam clicks
+    const COOLDOWN_MS = 500;          // change this if you want
+    let cooldownUntil = 0;            // performance.now() timestamp
+    let cooldownStartedAt = 0;        // for progress bar
 
     // Gamepad state
     let gpPrev = new Map(); // index -> pressed array
@@ -486,12 +537,32 @@
     }
 
     // ---------- Run control ----------
+    function beginCooldown(now){
+      if (mode !== "timed") return;
+      cooldownStartedAt = now;
+      cooldownUntil = now + COOLDOWN_MS;
+      runStateEl.textContent = "Cooldown";
+      runStateEl.style.color = "var(--warn)";
+    }
+
+    function clearCooldown(){
+      cooldownUntil = 0;
+      cooldownStartedAt = 0;
+    }
+
+    function canStart(now){
+      return now >= cooldownUntil;
+    }
+
     function start(){
       if (running) return;
+      const now = performance.now();
+      if (!canStart(now)) return;
+
       syncConfigFromUI();
 
       running = true;
-      startWall = performance.now();
+      startWall = now;
       stopWall = 0;
       endWall = (mode === "timed") ? (startWall + durationSec * 1000) : null;
 
@@ -501,6 +572,8 @@
       buckets = [];
       lastBucketIndex = -1;
       peakCps = 0;
+
+      clearCooldown();
 
       btnStart.disabled = true;
       btnStop.disabled = false;
@@ -516,8 +589,13 @@
 
       btnStart.disabled = false;
       btnStop.disabled = true;
-      runStateEl.textContent = "Stopped";
-      runStateEl.style.color = "var(--warn)";
+
+      if (mode === "timed"){
+        beginCooldown(stopWall);
+      } else {
+        runStateEl.textContent = "Stopped";
+        runStateEl.style.color = "var(--warn)";
+      }
     }
 
     function finishTimed(){
@@ -527,8 +605,9 @@
 
       btnStart.disabled = false;
       btnStop.disabled = true;
-      runStateEl.textContent = "Finished";
-      runStateEl.style.color = "var(--warn)";
+
+      // Cooldown so spam clicking doesn't instantly restart
+      beginCooldown(stopWall);
     }
 
     function resetAll(){
@@ -543,6 +622,8 @@
       buckets = [];
       lastBucketIndex = -1;
       peakCps = 0;
+
+      clearCooldown();
 
       btnStart.disabled = false;
       btnStop.disabled = true;
@@ -606,12 +687,12 @@
       registerInput(`Key: ${e.key}`);
     }, { passive: false });
 
-    // Pointer clicks (mouse/touch/pen)
+    // Global pointer handler (counts clicks anywhere that's not UI)
     window.addEventListener("pointerdown", (e) => {
       if (!shouldCountPointer(e)) return;
       if (isUiControlTarget(e.target)) return;
 
-      // If right-clicking inside Test Pad, prevent context menu "preemptively"
+      // prevent context menu if right-click happens on pad
       if (e.pointerType === "mouse" && e.button === 2 && testPad && testPad.contains(e.target)){
         e.preventDefault();
       }
@@ -631,11 +712,28 @@
       registerInput("Wheel");
     }, { passive: true });
 
-    // Disable context menu ONLY on the Test Pad (the "spot" you asked for)
+    // Disable context menu ONLY on the Test Pad
     if (testPad){
-      testPad.addEventListener("contextmenu", (e) => {
-        e.preventDefault();
-      });
+      testPad.addEventListener("contextmenu", (e) => e.preventDefault());
+
+      // Click-to-start behavior ONLY on the Test Pad
+      // Use capture + stopPropagation so the same click doesn't get handled twice.
+      testPad.addEventListener("pointerdown", (e) => {
+        if (isUiControlTarget(e.target)) return;
+
+        // Right click on pad: suppress menu
+        if (e.pointerType === "mouse" && e.button === 2) e.preventDefault();
+
+        // If idle/stopped/finished, start when pad clicked (but respect cooldown)
+        if (!running){
+          const now = performance.now();
+          if (canStart(now)){
+            start();
+          }
+          // Don't let this click bubble and accidentally do anything else
+          e.stopPropagation();
+        }
+      }, { capture: true });
     }
 
     // Focus indicator
@@ -711,6 +809,49 @@
       return secsCounted > 0 ? (sum / secsCounted) : 0;
     }
 
+    function updatePadUi(now){
+      // Cooldown visuals (timed mode only)
+      const inCooldown = (mode === "timed") && (now < cooldownUntil);
+
+      if (inCooldown){
+        const remainingMs = Math.max(0, cooldownUntil - now);
+        const remain = (remainingMs / 1000).toFixed(2);
+        padBadge.textContent = `Cooldown: ${remain}s`;
+        cooldownBarWrap.style.display = "block";
+        const prog = 1 - (remainingMs / COOLDOWN_MS);
+        cooldownBar.style.width = `${Math.max(0, Math.min(1, prog)) * 100}%`;
+        padSub.textContent = "Cooldown prevents accidental restart while you’re still clicking.";
+        return;
+      } else {
+        cooldownBarWrap.style.display = "none";
+        cooldownBar.style.width = "0%";
+      }
+
+      if (running){
+        if (mode === "timed"){
+          const rem = getRemaining(now);
+          padBadge.textContent = `Running • ${formatSeconds(rem)} left`;
+        } else {
+          padBadge.textContent = "Running";
+        }
+        padSub.textContent = "Clicking counts now. Right-click menu is disabled on the pad.";
+      } else {
+        // Not running
+        if (mode === "timed"){
+          padBadge.textContent = `Click to start (${durationSec}s)`;
+        } else {
+          padBadge.textContent = "Click to start (Unlimited)";
+        }
+        padSub.textContent = "Left / middle / right click count • right-click menu disabled • keyboard works when page is focused";
+      }
+
+      // If cooldown ended and we were showing "Cooldown" state, switch runState label
+      if (mode === "timed" && runStateEl.textContent === "Cooldown"){
+        runStateEl.textContent = "Finished";
+        runStateEl.style.color = "var(--warn)";
+      }
+    }
+
     function renderUI(now){
       syncConfigFromUI();
 
@@ -742,6 +883,7 @@
       peakCpsEl.textContent = String(peakCps);
       rollCpsEl.textContent = (running ? getRollingAvgCps(now) : 0).toFixed(2);
 
+      updatePadUi(now);
       drawChart();
     }
 
@@ -749,7 +891,6 @@
     function drawChart(){
       const showSecs = (mode === "timed") ? durationSec : historySec;
 
-      // Build series ending at current second
       let series = [];
       if (startWall){
         const elapsed = getElapsed(performance.now());
@@ -765,7 +906,6 @@
       const w = canvas.width, h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
-      // grid
       ctx.strokeStyle = "rgba(255,255,255,0.10)";
       ctx.lineWidth = 1;
       const gridY = 4;
